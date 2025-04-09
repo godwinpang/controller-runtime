@@ -83,6 +83,18 @@ type TypedOptions[request comparable] struct {
 	// LogConstructor is used to construct a logger used for this controller and passed
 	// to each reconciliation via the context field.
 	LogConstructor func(request *request) logr.Logger
+
+	// UsePriorityQueue configures the controllers queue to use the controller-runtime provided
+	// priority queue.
+	//
+	// Note: This flag is disabled by default until a future version. It's currently in beta.
+	UsePriorityQueue *bool
+
+	// ShouldWarmupWithoutLeadership specifies whether the controller should start its sources
+	// when the manager is not the leader.
+	// Defaults to false, which means that the controller will wait for leader election to start
+	// before starting sources.
+	ShouldWarmupWithoutLeadership *bool
 }
 
 // Controller implements a Kubernetes API.  A Controller manages a work queue fed reconcile.Requests
@@ -222,15 +234,16 @@ func NewTypedUnmanaged[request comparable](name string, mgr manager.Manager, opt
 
 	// Create controller with dependencies set
 	return &controller.Controller[request]{
-		Do:                      options.Reconciler,
-		RateLimiter:             options.RateLimiter,
-		NewQueue:                options.NewQueue,
-		MaxConcurrentReconciles: options.MaxConcurrentReconciles,
-		CacheSyncTimeout:        options.CacheSyncTimeout,
-		Name:                    name,
-		LogConstructor:          options.LogConstructor,
-		RecoverPanic:            options.RecoverPanic,
-		LeaderElected:           options.NeedLeaderElection,
+		Do:                            options.Reconciler,
+		RateLimiter:                   options.RateLimiter,
+		NewQueue:                      options.NewQueue,
+		MaxConcurrentReconciles:       options.MaxConcurrentReconciles,
+		CacheSyncTimeout:              options.CacheSyncTimeout,
+		Name:                          name,
+		LogConstructor:                options.LogConstructor,
+		RecoverPanic:                  options.RecoverPanic,
+		LeaderElected:                 options.NeedLeaderElection,
+		ShouldWarmupWithoutLeadership: options.ShouldWarmupWithoutLeadership,
 	}, nil
 }
 
