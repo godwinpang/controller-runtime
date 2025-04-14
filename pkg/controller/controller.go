@@ -127,9 +127,9 @@ func (options *TypedOptions[request]) DefaultFromConfig(config config.Controller
 		options.NeedLeaderElection = config.NeedLeaderElection
 	}
 
-    if options.NeedWarmup == nil {
-        options.NeedWarmup = config.NeedWarmup
-    }
+	if options.NeedWarmup == nil {
+		options.NeedWarmup = config.NeedWarmup
+	}
 }
 
 // Controller implements an API. A Controller manages a work queue fed reconcile.Requests
@@ -269,16 +269,16 @@ func NewTypedUnmanaged[request comparable](name string, mgr manager.Manager, opt
 
 	// Create controller with dependencies set
 	return &controller.Controller[request]{
-		Do:                            options.Reconciler,
-		RateLimiter:                   options.RateLimiter,
-		NewQueue:                      options.NewQueue,
-		MaxConcurrentReconciles:       options.MaxConcurrentReconciles,
-		CacheSyncTimeout:              options.CacheSyncTimeout,
-		Name:                          name,
-		LogConstructor:                options.LogConstructor,
-		RecoverPanic:                  options.RecoverPanic,
-		LeaderElected:                 options.NeedLeaderElection,
-		NeedWarmup:                    options.NeedWarmup,
+		Do:                      options.Reconciler,
+		RateLimiter:             options.RateLimiter,
+		NewQueue:                options.NewQueue,
+		MaxConcurrentReconciles: options.MaxConcurrentReconciles,
+		CacheSyncTimeout:        options.CacheSyncTimeout,
+		Name:                    name,
+		LogConstructor:          options.LogConstructor,
+		RecoverPanic:            options.RecoverPanic,
+		LeaderElected:           options.NeedLeaderElection,
+		NeedWarmup:              options.NeedWarmup,
 	}, nil
 }
 
