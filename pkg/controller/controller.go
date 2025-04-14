@@ -90,15 +90,50 @@ type TypedOptions[request comparable] struct {
 	// Note: This flag is disabled by default until a future version. It's currently in beta.
 	UsePriorityQueue *bool
 
-	// ShouldWarmupWithoutLeadership specifies whether the controller should start its sources
+	// NeedWarmup specifies whether the controller should start its sources
 	// when the manager is not the leader.
 	// Defaults to false, which means that the controller will wait for leader election to start
 	// before starting sources.
-	ShouldWarmupWithoutLeadership *bool
+	NeedWarmup *bool
 }
 
-// Controller implements a Kubernetes API.  A Controller manages a work queue fed reconcile.Requests
-// from source.Sources.  Work is performed through the reconcile.Reconciler for each enqueued item.
+// DefaultFromConfig defaults the config from a config.Controller
+func (options *TypedOptions[request]) DefaultFromConfig(config config.Controller) {
+	if options.Logger.GetSink() == nil {
+		options.Logger = config.Logger
+	}
+
+	if options.SkipNameValidation == nil {
+		options.SkipNameValidation = config.SkipNameValidation
+	}
+
+	if options.MaxConcurrentReconciles <= 0 && config.MaxConcurrentReconciles > 0 {
+		options.MaxConcurrentReconciles = config.MaxConcurrentReconciles
+	}
+
+	if options.CacheSyncTimeout == 0 && config.CacheSyncTimeout > 0 {
+		options.CacheSyncTimeout = config.CacheSyncTimeout
+	}
+
+	if options.UsePriorityQueue == nil {
+		options.UsePriorityQueue = config.UsePriorityQueue
+	}
+
+	if options.RecoverPanic == nil {
+		options.RecoverPanic = config.RecoverPanic
+	}
+
+	if options.NeedLeaderElection == nil {
+		options.NeedLeaderElection = config.NeedLeaderElection
+	}
+
+    if options.NeedWarmup == nil {
+        options.NeedWarmup = config.NeedWarmup
+    }
+}
+
+// Controller implements an API. A Controller manages a work queue fed reconcile.Requests
+// from source.Sources. Work is performed through the reconcile.Reconciler for each enqueued item.
 // Work typically is reads and writes Kubernetes objects to make the system state match the state specified
 // in the object Spec.
 type Controller = TypedController[reconcile.Request]
@@ -243,7 +278,7 @@ func NewTypedUnmanaged[request comparable](name string, mgr manager.Manager, opt
 		LogConstructor:                options.LogConstructor,
 		RecoverPanic:                  options.RecoverPanic,
 		LeaderElected:                 options.NeedLeaderElection,
-		ShouldWarmupWithoutLeadership: options.ShouldWarmupWithoutLeadership,
+		NeedWarmup:                    options.NeedWarmup,
 	}, nil
 }
 
