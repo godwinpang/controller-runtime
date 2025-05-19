@@ -272,7 +272,7 @@ func NewTypedUnmanaged[request comparable](name string, mgr manager.Manager, opt
 	}
 
 	// Create controller with dependencies set
-	return &controller.Controller[request]{
+	return controller.New[request](controller.ControllerOptions[request]{
 		Do:                      options.Reconciler,
 		RateLimiter:             options.RateLimiter,
 		NewQueue:                options.NewQueue,
@@ -283,7 +283,7 @@ func NewTypedUnmanaged[request comparable](name string, mgr manager.Manager, opt
 		RecoverPanic:            options.RecoverPanic,
 		LeaderElected:           options.NeedLeaderElection,
 		EnableWarmup:            options.EnableWarmup,
-	}, nil
+	}), nil
 }
 
 // ReconcileIDFromContext gets the reconcileID from the current context.
