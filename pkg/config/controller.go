@@ -16,7 +16,11 @@ limitations under the License.
 
 package config
 
-import "time"
+import (
+    "time"
+
+    "github.com/go-logr/logr"
+)
 
 // Controller contains configuration options for a controller.
 type Controller struct {
@@ -72,4 +76,7 @@ type Controller struct {
 	//
 	// Note: This flag is disabled by default until a future version. It's currently in beta.
 	UsePriorityQueue *bool
+
+	// Logger is the logger controllers should use.
+	Logger logr.Logger
 }

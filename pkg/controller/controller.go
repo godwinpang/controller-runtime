@@ -26,6 +26,7 @@ import (
 	"k8s.io/klog/v2"
 	"k8s.io/utils/ptr"
 
+	"sigs.k8s.io/controller-runtime/pkg/config"
 	"sigs.k8s.io/controller-runtime/pkg/controller/priorityqueue"
 	"sigs.k8s.io/controller-runtime/pkg/internal/controller"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
@@ -79,6 +80,9 @@ type TypedOptions[request comparable] struct {
 	// NOTE: LOW LEVEL PRIMITIVE!
 	// Only use a custom NewQueue if you know what you are doing.
 	NewQueue func(controllerName string, rateLimiter workqueue.TypedRateLimiter[request]) workqueue.TypedRateLimitingInterface[request]
+
+	// Logger will be used to build a default LogConstructor if unset.
+	Logger logr.Logger
 
 	// LogConstructor is used to construct a logger used for this controller and passed
 	// to each reconciliation via the context field.
